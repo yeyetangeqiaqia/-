@@ -37,7 +37,6 @@
         .donate-btn:hover {
             transform: scale(1.05);
         }
-        /* 弹窗样式修复 */
         .popup {
             display: none;
             position: fixed;
@@ -80,6 +79,11 @@
             border-radius: 50%;
             background: rgba(0,0,0,0.1);
         }
+        .stats-btn {
+            background: #666 !important;
+            margin-top: 30px;
+            width: 180px;
+        }
     </style>
 </head>
 <body>
@@ -100,33 +104,67 @@
             <p>请截图保存转账凭证</p>
         </div>
     </div>
+    <button class="donate-btn stats-btn" onclick="showStatistics()">查看捐款统计</button>
     <script>
+        // 初始化统计数据
+        function initStats() {
+            if (!localStorage.getItem('donationStats')) {
+                const initialStats = {
+                    '10000': 0,
+                    '100000': 0,
+                    '200000': 0,
+                    '1000000': 0
+                };
+                localStorage.setItem('donationStats', JSON.stringify(initialStats));
+            }
+        }
+        // 处理捐款点击
         function handleDonate(amount) {
+            initStats();
+            
             if (amount === 0.1 || amount === 0) {
                 alert("🤑 此捐款金额不符合您的气质！\n请选择其他捐款金额！");
                 return;
             }
+            // 更新统计数据
+            const stats = JSON.parse(localStorage.getItem('donationStats'));
+            stats[amount] = (stats[amount] || 0) + 1;
+            localStorage.setItem('donationStats', JSON.stringify(stats));
             showPopup();
         }
+        // 显示弹窗
         function showPopup() {
-            // 创建遮罩层
             const overlay = document.createElement('div');
             overlay.className = 'popup-overlay';
             overlay.onclick = closePopup;
             document.body.appendChild(overlay);
             
-            // 显示弹窗
-            const popup = document.getElementById('donatePopup');
-            popup.style.display = 'block';
+            document.getElementById('donatePopup').style.display = 'block';
         }
+        // 关闭弹窗
         function closePopup() {
             document.getElementById('donatePopup').style.display = 'none';
-            // 移除遮罩层
             const overlays = document.getElementsByClassName('popup-overlay');
             while(overlays.length > 0) {
                 overlays[0].parentNode.removeChild(overlays[0]);
             }
         }
+        // 显示统计信息
+        function showStatistics() {
+            initStats();
+            const stats = JSON.parse(localStorage.getItem('donationStats')) || {};
+            const statContent = [
+                '💰 捐款统计明细：',
+                `一万捐款：${stats['10000']}次`,
+                `十万捐款：${stats['100000']}次`,
+                `二十万捐款：${stats['200000']}次`,
+                `百万捐款：${stats['1000000']}次`,
+                '\n总计：' + Object.values(stats).reduce((a, b) => a + b, 0) + '次大额捐款'
+            ].join('\n');
+            alert(statContent);
+        }
+        // 页面加载时初始化
+        initStats();
     </script>
 </body>
 </html>
