@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>岳帅专属捐款通道</title>
+    <title>岳帅专属捐款统计系统</title>
     <style>
         body {
             font-family: "微软雅黑", sans-serif;
@@ -82,7 +82,7 @@
         .stats-btn {
             background: #666 !important;
             margin-top: 30px;
-            width: 180px;
+            width: 220px;
         }
     </style>
 </head>
@@ -95,6 +95,7 @@
     <button class="donate-btn small-amount" onclick="handleDonate(0.1)">捐款一毛</button>
     <button class="donate-btn small-amount" onclick="handleDonate(0)">一分不捐</button>
     <button class="donate-btn big-amount" onclick="handleDonate(1000000)">捐款一百万</button>
+    
     <div id="donatePopup" class="popup">
         <div class="popup-content">
             <span class="close-btn" onclick="closePopup()">×</span>
@@ -104,33 +105,42 @@
             <p>请截图保存转账凭证</p>
         </div>
     </div>
-    <button class="donate-btn stats-btn" onclick="showStatistics()">查看捐款统计</button>
+    
+    <button class="donate-btn stats-btn" onclick="showStatistics()">查看完整捐款统计</button>
     <script>
         // 初始化统计数据
         function initStats() {
-            if (!localStorage.getItem('donationStats')) {
+            if (!localStorage.getItem('fullDonationStats')) {
                 const initialStats = {
                     '10000': 0,
                     '100000': 0,
                     '200000': 0,
-                    '1000000': 0
+                    '1000000': 0,
+                    '0.1': 0,
+                    '0': 0
                 };
-                localStorage.setItem('donationStats', JSON.stringify(initialStats));
+                localStorage.setItem('fullDonationStats', JSON.stringify(initialStats));
             }
         }
-        // 处理捐款点击
+        // 处理所有按钮点击
         function handleDonate(amount) {
             initStats();
             
+            // 弹出警告但依然记录统计
             if (amount === 0.1 || amount === 0) {
-                alert("🤑 此捐款金额不符合您的气质！\n请选择其他捐款金额！");
-                return;
+                alert("🤑 此捐款金额不符合您的气质！\n但已为您记录本次点击！");
             }
+            
             // 更新统计数据
-            const stats = JSON.parse(localStorage.getItem('donationStats'));
-            stats[amount] = (stats[amount] || 0) + 1;
-            localStorage.setItem('donationStats', JSON.stringify(stats));
-            showPopup();
+            const stats = JSON.parse(localStorage.getItem('fullDonationStats'));
+            const amountKey = amount.toString();
+            stats[amountKey] = (stats[amountKey] || 0) + 1;
+            localStorage.setItem('fullDonationStats', JSON.stringify(stats));
+            
+            // 仅大额捐款显示弹窗
+            if (amount > 0.1) {
+                showPopup();
+            }
         }
         // 显示弹窗
         function showPopup() {
@@ -149,21 +159,30 @@
                 overlays[0].parentNode.removeChild(overlays[0]);
             }
         }
-        // 显示统计信息
+        // 显示完整统计信息
         function showStatistics() {
             initStats();
-            const stats = JSON.parse(localStorage.getItem('donationStats')) || {};
+            const stats = JSON.parse(localStorage.getItem('fullDonationStats')) || {};
+            
             const statContent = [
-                '💰 捐款统计明细：',
-                `一万捐款：${stats['10000']}次`,
-                `十万捐款：${stats['100000']}次`,
-                `二十万捐款：${stats['200000']}次`,
-                `百万捐款：${stats['1000000']}次`,
-                '\n总计：' + Object.values(stats).reduce((a, b) => a + b, 0) + '次大额捐款'
+                '📊 完整捐款统计：',
+                '——————————————',
+                `💰 大额捐款：`,
+                `· 一万：${stats['10000']}次`,
+                `· 十万：${stats['100000']}次`,
+                `· 二十万：${stats['200000']}次`,
+                `· 一百万：${stats['1000000']}次`,
+                '',
+                `🪙 小额点击：`,
+                `· 一毛捐款：${stats['0.1']}次`,
+                `· 一分不捐：${stats['0']}次`,
+                '——————————————',
+                `总计点击：${Object.values(stats).reduce((a, b) => a + b, 0)}次`
             ].join('\n');
+            
             alert(statContent);
         }
-        // 页面加载时初始化
+        // 页面加载初始化
         initStats();
     </script>
 </body>
