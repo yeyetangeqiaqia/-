@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>岳帅专属捐款通道</title>
+    <style>
+        body {
+            font-family: "微软雅黑", sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+            background: #f0f8ff;
+        }
+        h1 {
+            color: #ff4444;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .donate-btn {
+            display: block;
+            width: 200px;
+            margin: 15px auto;
+            padding: 15px;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .big-amount {
+            background: linear-gradient(45deg, #4CAF50, #66BB6A);
+            color: white;
+        }
+        .small-amount {
+            background: linear-gradient(45deg, #ff4444, #ff6666);
+            color: white;
+        }
+        .donate-btn:hover {
+            transform: scale(1.05);
+        }
+        /* 弹窗样式修复 */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        .popup img {
+            max-width: 300px;
+            margin: 10px 0;
+            border-radius: 10px;
+        }
+        .popup-text {
+            font-size: 24px;
+            color: #ffd700;
+            margin: 15px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            padding: 0 8px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>❤️ 给岳帅的爱心捐款通道 ❤️</h1>
+    
+    <button class="donate-btn big-amount" onclick="handleDonate(10000)">捐款一万</button>
+    <button class="donate-btn big-amount" onclick="handleDonate(100000)">捐款十万</button>
+    <button class="donate-btn big-amount" onclick="handleDonate(200000)">捐款二十万</button>
+    <button class="donate-btn small-amount" onclick="handleDonate(0.1)">捐款一毛</button>
+    <button class="donate-btn small-amount" onclick="handleDonate(0)">一分不捐</button>
+    <button class="donate-btn big-amount" onclick="handleDonate(1000000)">捐款一百万</button>
+    <div id="donatePopup" class="popup">
+        <div class="popup-content">
+            <span class="close-btn" onclick="closePopup()">×</span>
+            <div class="popup-text">上帝保佑您！！！<br>祝您蛇年大吉！！！</div>
+            <img src="https://img.picui.cn/free/2025/03/04/67c6cab94d2f5.jpg" alt="祝福图片">
+            <h3>支付宝账户：13145224019</h3>
+            <p>请截图保存转账凭证</p>
+        </div>
+    </div>
+    <script>
+        function handleDonate(amount) {
+            if (amount === 0.1 || amount === 0) {
+                alert("🤑 此捐款金额不符合您的气质！\n请选择其他捐款金额！");
+                return;
+            }
+            showPopup();
+        }
+        function showPopup() {
+            // 创建遮罩层
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay';
+            overlay.onclick = closePopup;
+            document.body.appendChild(overlay);
+            
+            // 显示弹窗
+            const popup = document.getElementById('donatePopup');
+            popup.style.display = 'block';
+        }
+        function closePopup() {
+            document.getElementById('donatePopup').style.display = 'none';
+            // 移除遮罩层
+            const overlays = document.getElementsByClassName('popup-overlay');
+            while(overlays.length > 0) {
+                overlays[0].parentNode.removeChild(overlays[0]);
+            }
+        }
+    </script>
+</body>
+</html>
